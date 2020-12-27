@@ -1,13 +1,4 @@
-import pandas as pd
 import configparser
-
-class Report():
-    def __init__(self, orig, dest):
-        self._orig = orig
-        self._dest = dest
-
-    def read_data(self):
-        self._data = pd.read_excel(self._orig)
 
 def read_config(path):
     config = configparser.ConfigParser()
