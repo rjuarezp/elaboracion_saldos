@@ -1,3 +1,3 @@
-# Elaboracion de reportes
+# Elaboracion de saldos
 
-Programa para la elaboracion de reportes bisemanales.
+Programa para la elaboracion de saldos bisemanales.
