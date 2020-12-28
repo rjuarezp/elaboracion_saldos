@@ -9,10 +9,12 @@ sg.theme('DarkAmber')   # Add a touch of color
 
 # All the stuff inside your window.
 layout = [
-            [sg.Text('Archivo de origen', size=(20,1)), sg.InputText(key='-ORIG-'), sg.FileBrowse(button_text='Seleccionar', file_types=(("Excel Files", "*.xlsx"),))],
-            [sg.Text('Directorio de destino', size=(20,1)), sg.InputText(key='-DEST-'), sg.FolderBrowse(button_text='Seleccionar')],
+            [sg.Text('Archivo de origen', size=(20,1)), sg.InputText(key='-ORIG-', enable_events=True), sg.FileBrowse(button_text='Seleccionar', file_types=(("Excel Files", "*.xlsx"),))],
+            [sg.Text('Directorio de destino', size=(20,1)), sg.InputText(key='-DEST-', enable_events=True), sg.FolderBrowse(button_text='Seleccionar')],
             [sg.Text('' * 80)],
             [sg.Button('Procesar'), sg.Button('Salir'), sg.Text(size=(45,1)), sg.Button('Guardar config')],
+            [sg.Text('_' * 80)],
+            [sg.Text('', size=(80,1), key='-STATUS-')],
         ]
 
 # Create the Window
@@ -27,11 +29,21 @@ if os.path.exists(ININAME):
 
 while True:
     event, values = window.read()
+    print(event, values)
     if event == sg.WIN_CLOSED or event == 'Salir': # if user closes window or clicks cancel
         break
     elif event == 'Procesar':
-        calclibrary.process_file(values['-ORIG-'], values['-DEST-'])
+        status = calclibrary.process_file(values['-ORIG-'], values['-DEST-'])
+        if status == 0:
+            window['-STATUS-'].Update('Archivo procesado correctamente')
+        elif status == -1:
+            window['-STATUS-'].Update('Error en el procesamiento del archivo')
     elif event == 'Guardar config':
         calclib.save_config(values, ININAME)
+        window['-STATUS-'].Update('Configuración guardada')
+    elif event == '-ORIG-':
+        window['-STATUS-'].Update('Archivo de origen seleccionado')
+    elif event == '-DEST-':
+        window['-STATUS-'].Update('Directorio de destino seleccionado')
 
 window.close()

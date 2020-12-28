@@ -2,66 +2,70 @@ import pandas as pd
 import os
 
 def process_file(inputfile, outputpath):
-  filename = inputfile.split(os.path.sep)[-1].split('.')[0].split('-')[0]
-  df = pd.read_excel(inputfile, engine='openpyxl', skiprows=1)
-  #df = pd.read_excel(inputfile, skiprows=1)
+  try:
+    filename = inputfile.split(os.path.sep)[-1].split('.')[0].split('-')[0]
+    df = pd.read_excel(inputfile, engine='openpyxl', skiprows=1)
+    #df = pd.read_excel(inputfile, skiprows=1)
 
-  to_rename = [x for x in df.columns if x.startswith('Saldo')]
-  df.rename(columns={to_rename[0]: 'Saldos', 'DESCRIPCION': ''}, inplace=True)
+    to_rename = [x for x in df.columns if x.startswith('Saldo')]
+    df.rename(columns={to_rename[0]: 'Saldos', 'DESCRIPCION': ''}, inplace=True)
 
-  to_drop = ['No vencido', 'Riesgo Máx.:', 'NIVEL']
-  df.drop(to_drop, axis=1, inplace=True)
+    to_drop = ['No vencido', 'Riesgo Máx.:', 'NIVEL']
+    df.drop(to_drop, axis=1, inplace=True)
 
-  df = df[df['COD'].str.startswith('80') | df['COD'].str.startswith('00')].copy()
+    df = df[df['COD'].str.startswith('80') | df['COD'].str.startswith('00')].copy()
 
-  order = ['', 'COD', 'Saldos', 'Vencido', '1 - 30 días', '31 - 60 días', '61 - 90 días', '91 - 180 días', '181 - 365 días', '1 - 2 años', '+ 2 años']
+    order = ['', 'COD', 'Saldos', 'Vencido', '1 - 30 días', '31 - 60 días', '61 - 90 días', '91 - 180 días', '181 - 365 días', '1 - 2 años', '+ 2 años']
 
-  df_order = df[order].copy()
+    df_order = df[order].copy()
 
-  df_order.reset_index(drop=True, inplace=True)
+    df_order.reset_index(drop=True, inplace=True)
 
-  df_order['index'] = df_order.index
+    df_order['index'] = df_order.index
 
-  vendors = [x for x in df_order['COD'].unique() if x.startswith('80')]
-  df_vendors = df_order[df_order['COD'].isin(vendors)].copy()
-  n_vendors = len(vendors)
-  mapping = {}
-  for i in range(n_vendors):
-    name = df_vendors.iloc[i, df_order.columns.get_loc("")]
-    start = df_vendors.iloc[i, df_order.columns.get_loc("index")] + 1
-    if i < n_vendors-1 :
-      end = df_vendors.iloc[i+1, df_order.columns.get_loc("index")]
-    else:
-      end = df_order.shape[0]
-    if end > start:
-      mapping[vendors[i]] = {'start': start, 'end': end, 'name': name}
+    vendors = [x for x in df_order['COD'].unique() if x.startswith('80')]
+    df_vendors = df_order[df_order['COD'].isin(vendors)].copy()
+    n_vendors = len(vendors)
+    mapping = {}
+    for i in range(n_vendors):
+      name = df_vendors.iloc[i, df_order.columns.get_loc("")]
+      start = df_vendors.iloc[i, df_order.columns.get_loc("index")] + 1
+      if i < n_vendors-1 :
+        end = df_vendors.iloc[i+1, df_order.columns.get_loc("index")]
+      else:
+        end = df_order.shape[0]
+      if end > start:
+        mapping[vendors[i]] = {'start': start, 'end': end, 'name': name}
 
-  columns = ['Vencido', '1 - 30 días', '31 - 60 días', '61 - 90 días', '91 - 180 días', '181 - 365 días', '1 - 2 años',
-             '+ 2 años']
-  cols_to_elminate = ['91 - 180 días', '181 - 365 días', '1 - 2 años', '+ 2 años']
+    columns = ['Vencido', '1 - 30 días', '31 - 60 días', '61 - 90 días', '91 - 180 días', '181 - 365 días', '1 - 2 años',
+               '+ 2 años']
+    cols_to_elminate = ['91 - 180 días', '181 - 365 días', '1 - 2 años', '+ 2 años']
 
-  active_vendors = list(mapping.keys())
-  for ac_ve in active_vendors:
-    vendor = df_order.iloc[mapping[ac_ve]['start']:mapping[ac_ve]['end']]
-    mask = vendor['Vencido'] > 0
-    vendor = vendor[mask].copy()
-    vendor.sort_values(by=[''], inplace=True)
-    new_line = {}
-    for col in columns:
-      new_line[col] = vendor[col].sum()
-    to_drop = []
-    for col in cols_to_elminate:
-      if new_line[col] == 0:
-        to_drop.append(col)
-    line_end = pd.DataFrame(new_line, index=[1])
-    df1 = pd.concat([vendor.iloc[:], line_end]).reset_index(drop=True)
-    df1.drop(to_drop, axis=1, inplace=True)
-    line = pd.DataFrame({"": mapping[ac_ve]['name']}, index=[1])
-    df2 = pd.concat([line, df1.iloc[:]]).reset_index(drop=True)
-    df2.drop('index', axis=1, inplace=True)
-    xlsx_filename = filename + '_' + ac_ve + '.xlsx'
-    outputname = os.path.join(outputpath, xlsx_filename)
-    format_excel(df2, outputname)
+    active_vendors = list(mapping.keys())
+    for ac_ve in active_vendors:
+      vendor = df_order.iloc[mapping[ac_ve]['start']:mapping[ac_ve]['end']]
+      mask = vendor['Vencido'] > 0
+      vendor = vendor[mask].copy()
+      vendor.sort_values(by=[''], inplace=True)
+      new_line = {}
+      for col in columns:
+        new_line[col] = vendor[col].sum()
+      to_drop = []
+      for col in cols_to_elminate:
+        if new_line[col] == 0:
+          to_drop.append(col)
+      line_end = pd.DataFrame(new_line, index=[1])
+      df1 = pd.concat([vendor.iloc[:], line_end]).reset_index(drop=True)
+      df1.drop(to_drop, axis=1, inplace=True)
+      line = pd.DataFrame({"": mapping[ac_ve]['name']}, index=[1])
+      df2 = pd.concat([line, df1.iloc[:]]).reset_index(drop=True)
+      df2.drop('index', axis=1, inplace=True)
+      xlsx_filename = filename + '_' + ac_ve + '.xlsx'
+      outputname = os.path.join(outputpath, xlsx_filename)
+      format_excel(df2, outputname)
+    return 0
+  except:
+    return -1
 
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.styles import Border, Side, PatternFill, Font, GradientFill, Alignment
