@@ -60,7 +60,7 @@ def process_file(inputfile, outputpath):
       line = pd.DataFrame({"": mapping[ac_ve]['name']}, index=[1])
       df2 = pd.concat([line, df1.iloc[:]]).reset_index(drop=True)
       df2.drop('index', axis=1, inplace=True)
-      xlsx_filename = filename + '_' + ac_ve + '.xlsx'
+      xlsx_filename = filename + '_' + mapping[ac_ve]['name'] + '.xlsx'
       outputname = os.path.join(outputpath, xlsx_filename)
       format_excel(df2, outputname)
     return 0
