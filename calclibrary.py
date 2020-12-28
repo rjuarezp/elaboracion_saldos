@@ -42,11 +42,15 @@ def process_file(inputfile, outputpath):
     cols_to_elminate = ['91 - 180 días', '181 - 365 días', '1 - 2 años', '+ 2 años']
 
     active_vendors = list(mapping.keys())
+    total_df = pd.DataFrame()
     for ac_ve in active_vendors:
       vendor = df_order.iloc[mapping[ac_ve]['start']:mapping[ac_ve]['end']]
       mask = vendor['Vencido'] > 0
       vendor = vendor[mask].copy()
       vendor.sort_values(by=[''], inplace=True)
+      line = pd.DataFrame({"": mapping[ac_ve]['name']}, index=[1])
+      df1 = pd.concat([line, vendor.iloc[:]]).reset_index(drop=True)
+      df1.drop('index', axis=1, inplace=True)
       new_line = {}
       for col in columns:
         new_line[col] = vendor[col].sum()
@@ -55,14 +59,15 @@ def process_file(inputfile, outputpath):
         if new_line[col] == 0:
           to_drop.append(col)
       line_end = pd.DataFrame(new_line, index=[1])
-      df1 = pd.concat([vendor.iloc[:], line_end]).reset_index(drop=True)
-      df1.drop(to_drop, axis=1, inplace=True)
-      line = pd.DataFrame({"": mapping[ac_ve]['name']}, index=[1])
-      df2 = pd.concat([line, df1.iloc[:]]).reset_index(drop=True)
-      df2.drop('index', axis=1, inplace=True)
+      df2 = pd.concat([df1, line_end]).reset_index(drop=True)
+      df2.drop(to_drop, axis=1, inplace=True)
+
+      total_df = pd.concat([total_df, df1])
       xlsx_filename = filename + '_' + mapping[ac_ve]['name'] + '.xlsx'
       outputname = os.path.join(outputpath, xlsx_filename)
-      format_excel(df2, outputname)
+      format_excel(df2, outputname )
+    xlsx_filename_all = os.path.join(outputpath, filename + '_Fercampo.xlsx')
+    total_df.to_excel(xlsx_filename_all, index=False)
     return 0
   except:
     return -1
