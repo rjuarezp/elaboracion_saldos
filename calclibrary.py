@@ -65,7 +65,7 @@ def process_file(inputfile, outputpath):
       total_df = pd.concat([total_df, df1])
       xlsx_filename = filename + '_' + mapping[ac_ve]['name'] + '.xlsx'
       outputname = os.path.join(outputpath, xlsx_filename)
-      format_excel(df2, outputname )
+      format_excel(df2, outputname)
     xlsx_filename_all = os.path.join(outputpath, filename + '_Fercampo.xlsx')
     total_df.to_excel(xlsx_filename_all, index=False)
     return 0
