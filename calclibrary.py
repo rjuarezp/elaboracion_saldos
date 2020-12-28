@@ -61,7 +61,6 @@ def process_file(inputfile, outputpath):
       line_end = pd.DataFrame(new_line, index=[1])
       df2 = pd.concat([df1, line_end]).reset_index(drop=True)
       df2.drop(to_drop, axis=1, inplace=True)
-
       total_df = pd.concat([total_df, df1])
       xlsx_filename = filename + '_' + mapping[ac_ve]['name'] + '.xlsx'
       outputname = os.path.join(outputpath, xlsx_filename)
