@@ -73,7 +73,6 @@ def process_file(inputfile, outputpath):
 
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.styles import Border, Side, PatternFill, Font, GradientFill, Alignment
-from openpyxl.styles import numbers
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 
