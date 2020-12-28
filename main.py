@@ -29,7 +29,6 @@ if os.path.exists(ININAME):
 
 while True:
     event, values = window.read()
-    print(event, values)
     if event == sg.WIN_CLOSED or event == 'Salir': # if user closes window or clicks cancel
         break
     elif event == 'Procesar':
