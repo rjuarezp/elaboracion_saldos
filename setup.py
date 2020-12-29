@@ -11,8 +11,8 @@ executables = [
     Executable('main.py', base=base)
 ]
 
-setup(name='main',
+setup(name='elaboracion_saldos',
       version = '0.2',
-      description = 'elaboracion de saldos',
+      description = 'Elaboracion de saldos',
       options = {'build_exe': build_options},
       executables = executables)
