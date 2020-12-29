@@ -1,33 +1,18 @@
-# Work around mbcs bug in distutils.
-# http://bugs.python.org/issue10945
-import codecs
+from cx_Freeze import setup, Executable
 
-try:
-    codecs.lookup('mbcs')
-except LookupError:
-    ascii = codecs.lookup('ascii')
-    func = lambda name, enc=ascii: {True: enc}.get(name=='mbcs')
-    codecs.register(func)
+# Dependencies are automatically detected, but it might need
+# fine tuning.
+build_options = {'packages': [], 'excludes': []}
 
-import setuptools
+import sys
+base = 'Win32GUI' if sys.platform=='win32' else None
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+executables = [
+    Executable('main.py', base=base, targetName = 'elaboracion_saldos_v0.2')
+]
 
-setuptools.setup(
-    name="example-pkg-YOUR-USERNAME-HERE", # Replace with your own username
-    version="0.0.1",
-    author="Ricardo Juarez",
-    author_email="rjuarezp@gmail.com",
-    description="Elaboracion de saldos",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://github.com/rjuarezp/gertru.git",
-    packages=setuptools.find_packages(),
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
-    python_requires='>=3.7',
-)
+setup(name='Elaboracion_de_saldos',
+      version = '0.2',
+      description = 'Elaboracion de Saldos para Ferticampo',
+      options = {'build_exe': build_options},
+      executables = executables)
