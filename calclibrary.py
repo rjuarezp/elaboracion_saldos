@@ -5,7 +5,6 @@ def process_file(inputfile, outputpath):
   try:
     filename = inputfile.split(os.path.sep)[-1].split('.')[0].split('-')[0]
     df = pd.read_excel(inputfile, engine='openpyxl', skiprows=1)
-    #df = pd.read_excel(inputfile, skiprows=1)
 
     to_rename = [x for x in df.columns if x.startswith('Saldo')]
     df.rename(columns={to_rename[0]: 'Saldos', 'DESCRIPCION': ''}, inplace=True)
