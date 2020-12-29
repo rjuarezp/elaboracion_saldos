@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import os
 import calclib
 import calclibrary
+import time as tm
 
 def main():
 
@@ -34,9 +35,11 @@ def main():
         if event == sg.WIN_CLOSED or event == 'Salir': # if user closes window or clicks cancel
             break
         elif event == 'Procesar':
+            start_time = tm.time()
             status = calclibrary.process_file(values['-ORIG-'], values['-DEST-'])
             if status == 0:
-                window['-STATUS-'].Update('Archivo procesado correctamente')
+                stop_time = tm.time()
+                window['-STATUS-'].Update('Archivo procesado correctamente en {} segundos'.format(round(stop_time-start_time,3)))
             elif status == -1:
                 window['-STATUS-'].Update('Error en el procesamiento del archivo')
         elif event == 'Guardar config':
