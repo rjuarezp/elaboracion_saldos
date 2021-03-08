@@ -1,10 +1,19 @@
 import pandas as pd
 import os
 
-def process_file(inputfile, outputpath):
+
+
+
+def process_file(inputfile, outputpath, streamlit=False):
   try:
-    filename = inputfile.split(os.path.sep)[-1].split('.')[0].split('-')[0]
-    df = pd.read_excel(inputfile, engine='openpyxl', skiprows=1)
+
+    if not streamlit:
+      filename = inputfile.split(os.path.sep)[-1].split('.')[0].split('-')[0]
+      df = pd.read_excel(inputfile, engine='openpyxl', skiprows=1)
+      df.head()
+    else:
+      df = pd.read_excel(inputfile, engine='openpyxl', skiprows=1)
+      filename = inputfile.name
 
     to_rename = [x for x in df.columns if x.startswith('Saldo')]
     df.rename(columns={to_rename[0]: 'Saldos', 'DESCRIPCION': ''}, inplace=True)

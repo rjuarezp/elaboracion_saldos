@@ -36,7 +36,7 @@ def main():
             break
         elif event == 'Procesar':
             start_time = tm.time()
-            status = calclibrary.process_file(values['-ORIG-'], values['-DEST-'])
+            status = calclibrary.process_file(values['-ORIG-'], values['-DEST-'], streamlit=False)
             if status == 0:
                 stop_time = tm.time()
                 window['-STATUS-'].Update('Archivo procesado correctamente en {} segundos'.format(round(stop_time-start_time,3)))
