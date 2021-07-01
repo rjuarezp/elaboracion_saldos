@@ -21,7 +21,8 @@ def process_file(inputfile, outputpath, streamlit=False):
     to_drop = ['No vencido', 'Riesgo Máx.:', 'NIVEL']
     df.drop(to_drop, axis=1, inplace=True)
 
-    df = df[df['COD'].str.startswith('80') | df['COD'].str.startswith('00')].copy()
+    cod_to_keep = ('80', '00', '04', '05')
+    df = df[df['COD'].str.startswith(cod_to_keep)].copy()
 
     order = ['', 'COD', 'Saldos', 'Vencido', '1 - 30 días', '31 - 60 días', '61 - 90 días', '91 - 180 días', '181 - 365 días', '1 - 2 años', '+ 2 años']
 
@@ -143,13 +144,22 @@ def format_excel(data, name):
   ws['A1'] = 'SALDO CLIENTES POR ANTIGÜEDAD'
   row_count = ws.max_row
   column_count = ws.max_column
-
+  # Apply Arial font
+  font = Font(name='Arial', size=10, color='FF000000')
+  boldfont = Font(name='Arial', size=10, b=True, color='FF000000')
+  for col in range(1, column_count+1):
+    for row in range(1, row_count+1):
+      cell = ws.cell(row=row, column=col)
+      cell.font = font
   ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=column_count)
   top_left_cell = ws['A1']
-  top_left_cell.font  = Font(b=True, color="000000")
+  top_left_cell.font  = boldfont
   top_left_cell.alignment = Alignment(horizontal="center", vertical="center")
+  for col in range(2, column_count + 1):
+    cell = ws.cell(row=2, column=col)
+    cell.font = boldfont
   seller_cell = ws['A3']
-  seller_cell.font  = Font(b=True, color="000000")
+  seller_cell.font  = boldfont
   seller_cell.alignment = Alignment(horizontal="center", vertical="center")
   # Put the borders
   thin = Side(border_style="thin", color="000000")
