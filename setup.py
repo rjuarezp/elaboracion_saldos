@@ -8,11 +8,11 @@ import sys
 base = 'Win32GUI' if sys.platform=='win32' else None
 
 executables = [
-    Executable('main.py', base=base)
+    Executable('main.py', base=base, targetName = 'Saldos')
 ]
 
-setup(name='elaboracion_saldos',
-      version = '0.2',
-      description = 'Elaboracion de saldos',
+setup(name='Saldos',
+      version = '1.0',
+      description = 'Saldos para Marien',
       options = {'build_exe': build_options},
       executables = executables)
