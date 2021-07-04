@@ -54,7 +54,7 @@ def process_file(inputfile, outputpath, streamlit=False):
     total_df = pd.DataFrame()
     for ac_ve in active_vendors:
       vendor = df_order.iloc[mapping[ac_ve]['start']:mapping[ac_ve]['end']]
-      mask = vendor['Vencido'] > 0
+      mask = vendor['Vencido'] >= 0.5 # Sólo nos quedamos con los vencidos mayores de 0.5€
       vendor = vendor[mask].copy()
       vendor.sort_values(by=[''], inplace=True)
       line = pd.DataFrame({"": mapping[ac_ve]['name']}, index=[1])
