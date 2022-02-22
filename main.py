@@ -16,7 +16,7 @@ def main():
                  sg.FileBrowse(button_text='Seleccionar', file_types=(("Excel Files", "*.xlsx"),("Excel Files", "*.xls"),))],
                 [sg.Text('Directorio de destino', size=(20,1)), sg.InputText(key='-DEST-', enable_events=True),
                  sg.FolderBrowse(button_text='Seleccionar')],
-                [sg.Radio('Version 2021', 'Radio1', default=False), sg.Radio('Version 2022', 'Radio1', default=True, key='-V2022-')],
+                [sg.Radio('Version <=2021', 'Radio1', default=False), sg.Radio('Version 2022', 'Radio1', default=True, key='-V2022-')],
                 [sg.Text('' * 80)],
                 [sg.Button('Procesar'), sg.Button('Salir'), sg.Text(size=(45,1)), sg.Button('Guardar config')],
                 [sg.Text('_' * 80)],
