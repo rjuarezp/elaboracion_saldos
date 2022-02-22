@@ -1,9 +1,6 @@
 import pandas as pd
 import os
 
-
-
-
 def process_file(inputfile, outputpath, streamlit=False):
   try:
 
@@ -170,3 +167,50 @@ def format_excel(data, name):
   # Saving document
   wb.save(name)
 
+def read_v2022(filename):
+  _data = pd.read_excel(filename, skiprows=3)
+  _data = _data[:-1]  # Eliminar ultima fila
+  _data['Cód. Cliente'] = _data['Cód. Cliente'].astype(int)
+  _data['Cód. Cliente'] = _data['Cód. Cliente'].astype(str)
+  _data['Cód. Cliente'] = _data['Cód. Cliente'].str.zfill(7)
+  return _data
+
+
+def process_file_v2022(inputfile, outputpath):
+  try:
+    df = read_v2022(inputfile)
+    list_sellers = df['Vendedor'].unique()
+    to_keep = ['Cliente', 'Cód. Cliente', 'Saldo Actual', 'Vencido', '1 - 30 días', '31 - 60 días', '61 - 90 días',
+               '91 - 180 días', '181 - 365 días', '1 - 2 años', '+ 2 años']
+
+    total = pd.DataFrame()
+    for vendor in list_sellers:
+      mask = df['Vendedor'] == vendor
+      temp = df[mask][to_keep].copy()
+      temp = temp[temp['Vencido'] >= 0.5].copy()  # Sólo nos quedamos con los vencidos mayores de 0.5€
+      if len(temp) > 0:  # Si hay datos del vendedor...
+        name_vendor = vendor.split('-')[-1].lstrip(' ').rstrip(' ')
+        df_name = pd.DataFrame({'Cliente': name_vendor}, index=[1])
+        temp1 = pd.concat([df_name, temp]).reset_index(drop=True)
+        temp1.rename(columns={'Cliente': ''}, inplace=True)
+        cols = ['Vencido', '1 - 30 días', '31 - 60 días', '61 - 90 días', '91 - 180 días', '181 - 365 días', '1 - 2 años',
+                '+ 2 años']
+        last_row = dict()
+        for col in cols:
+          if temp1[col].sum() == 0:
+            last_row[col] = ''
+          else:
+            last_row[col] = temp1[col].sum()
+        lastrow_df = pd.DataFrame(last_row, index=[0])
+        temp2 = pd.concat([temp1, lastrow_df]).reset_index(drop=True)
+
+        print('Processing {}'.format(vendor))
+        outputname = os.path.join(outputpath, 'data_' + name_vendor.replace(' ', '_') + '.xlsx')
+        # temp.to_excel(outputname, index=False)
+        format_excel(temp2, outputname)
+        total = pd.concat([total, temp1], ignore_index=True).reset_index(drop=True)
+    outputname_total = os.path.join(outputpath, 'Fercampo_output.xlsx')
+    total.to_excel(outputname_total, index=False)
+    return 0
+  except:
+    return 1

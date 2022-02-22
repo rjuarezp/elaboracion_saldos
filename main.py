@@ -12,8 +12,11 @@ def main():
 
     # All the stuff inside your window.
     layout = [
-                [sg.Text('Archivo de origen', size=(20,1)), sg.InputText(key='-ORIG-', enable_events=True), sg.FileBrowse(button_text='Seleccionar', file_types=(("Excel Files", "*.xlsx"),))],
-                [sg.Text('Directorio de destino', size=(20,1)), sg.InputText(key='-DEST-', enable_events=True), sg.FolderBrowse(button_text='Seleccionar')],
+                [sg.Text('Archivo de origen', size=(20,1)), sg.InputText(key='-ORIG-', enable_events=True),
+                 sg.FileBrowse(button_text='Seleccionar', file_types=(("Excel Files", "*.xlsx"),("Excel Files", "*.xls"),))],
+                [sg.Text('Directorio de destino', size=(20,1)), sg.InputText(key='-DEST-', enable_events=True),
+                 sg.FolderBrowse(button_text='Seleccionar')],
+                [sg.Radio('Version 2021', 'Radio1', default=False), sg.Radio('Version 2022', 'Radio1', default=True, key='-V2022-')],
                 [sg.Text('' * 80)],
                 [sg.Button('Procesar'), sg.Button('Salir'), sg.Text(size=(45,1)), sg.Button('Guardar config')],
                 [sg.Text('_' * 80)],
@@ -36,7 +39,10 @@ def main():
             break
         elif event == 'Procesar':
             start_time = tm.time()
-            status = calclibrary.process_file(values['-ORIG-'], values['-DEST-'], streamlit=False)
+            if values['-V2022-']:
+                status = calclibrary.process_file_v2022(values['-ORIG-'], values['-DEST-'])
+            else:
+                status = calclibrary.process_file(values['-ORIG-'], values['-DEST-'], streamlit=False)
             if status == 0:
                 stop_time = tm.time()
                 window['-STATUS-'].Update('Archivo procesado correctamente en {} segundos'.format(round(stop_time-start_time,3)))
