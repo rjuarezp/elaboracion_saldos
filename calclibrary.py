@@ -213,4 +213,4 @@ def process_file_v2022(inputfile, outputpath):
     total.to_excel(outputname_total, index=False)
     return 0
   except:
-    return 1
+    return -1
