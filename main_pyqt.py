@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
 
     def process(self):
         start_time = tm.time()
-        if str(self.combo_version.currentText())=='Version 2022':
+        if str(self.combo_version.currentText())=='Versión 2022':
             status = calclibrary.process_file_v2022(self.lineEdit_in.text(), self.lineEdit_out.text())
         else:
             status = calclibrary.process_file(self.lineEdit_in.text(), self.lineEdit_out.text(), streamlit=False)
@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
 
 APP_TITLE = 'Elaboración de saldos'
 ININAME = 'config.ini'
-COMBO_MENU = ['Version <= 2021', 'Version 2022']
+COMBO_MENU = ['Versión <= 2021', 'Versión 2022']
 
 app = QApplication([APP_TITLE])
 mainwindow = MainWindow(APP_TITLE, COMBO_MENU, ININAME)

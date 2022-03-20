@@ -204,7 +204,7 @@ def process_file_v2022(inputfile, outputpath):
         lastrow_df = pd.DataFrame(last_row, index=[0])
         temp2 = pd.concat([temp1, lastrow_df]).reset_index(drop=True)
 
-        print('Processing {}'.format(vendor))
+        #print('Processing {}'.format(vendor))
         outputname = os.path.join(outputpath, 'data_' + name_vendor.replace(' ', '_') + '.xlsx')
         # temp.to_excel(outputname, index=False)
         format_excel(temp2, outputname)
